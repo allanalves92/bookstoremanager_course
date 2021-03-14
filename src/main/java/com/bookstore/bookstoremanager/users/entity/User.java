@@ -1,6 +1,7 @@
 package com.bookstore.bookstoremanager.users.entity;
 
 import com.bookstore.bookstoremanager.books.entity.*;
+import com.bookstore.bookstoremanager.entity.*;
 import com.bookstore.bookstoremanager.users.enums.*;
 import lombok.*;
 
@@ -10,7 +11,7 @@ import java.util.*;
 
 @Data
 @Entity
-public class User {
+public class User extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
