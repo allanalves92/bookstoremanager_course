@@ -23,5 +23,4 @@ public class Author extends Auditable {
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
     private List<Book> books;
 
-
 }
