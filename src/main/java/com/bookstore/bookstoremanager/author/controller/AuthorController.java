@@ -36,4 +36,9 @@ public class AuthorController implements AuthorControllerDocs {
     return authorService.findAll();
   }
 
+  @DeleteMapping("/{id}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void delete(@PathVariable Long id) {
+    authorService.delete(id);
+  }
 }
