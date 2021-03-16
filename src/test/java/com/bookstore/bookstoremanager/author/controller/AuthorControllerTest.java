@@ -1,4 +1,3 @@
-
 package com.bookstore.bookstoremanager.author.controller;
 
 import com.bookstore.bookstoremanager.author.builder.*;
@@ -23,51 +22,70 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 public class AuthorControllerTest {
 
-	private static final String AUTHOR_API_URL_PATH = "/api/v1/authors";
+  private static final String AUTHOR_API_URL_PATH = "/api/v1/authors";
 
-	@Mock
-	private AuthorService authorService;
+  @Mock private AuthorService authorService;
 
-	@InjectMocks
-	private AuthorController authorController;
+  @InjectMocks private AuthorController authorController;
 
-	private MockMvc mockMvc;
+  private MockMvc mockMvc;
 
-	private AuthorDTOBuilder authorDTOBuilder;
+  private AuthorDTOBuilder authorDTOBuilder;
 
-	@BeforeEach
-	void setUp() {
-		authorDTOBuilder = AuthorDTOBuilder.builder().build();
-		mockMvc = MockMvcBuilders.standaloneSetup(authorController)
-			.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-			.setViewResolvers((s, locale) -> new MappingJackson2JsonView()).build();
-	}
+  @BeforeEach
+  void setUp() {
+    authorDTOBuilder = AuthorDTOBuilder.builder().build();
+    mockMvc =
+        MockMvcBuilders.standaloneSetup(authorController)
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setViewResolvers((s, locale) -> new MappingJackson2JsonView())
+            .build();
+  }
 
-	@Test
-	void whenPOSTIsCalledThenStatusCreatedShouldBeReturned() throws Exception {
-		AuthorDTO expectedCreatedAuthorDTO = authorDTOBuilder.buildAuthorDTO();
+  @Test
+  void whenPOSTIsCalledThenStatusCreatedShouldBeReturned() throws Exception {
+    AuthorDTO expectedCreatedAuthorDTO = authorDTOBuilder.buildAuthorDTO();
 
-		when(authorService.create(expectedCreatedAuthorDTO))
-				.thenReturn(expectedCreatedAuthorDTO);
+    when(authorService.create(expectedCreatedAuthorDTO)).thenReturn(expectedCreatedAuthorDTO);
 
-		mockMvc.perform(post(AUTHOR_API_URL_PATH)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(expectedCreatedAuthorDTO)))
-				.andExpect(status().isCreated())
-				.andExpect(jsonPath("$.id", is(expectedCreatedAuthorDTO.getId().intValue())))
-				.andExpect(jsonPath("$.name", is(expectedCreatedAuthorDTO.getName())))
-				.andExpect(jsonPath("$.age", is(expectedCreatedAuthorDTO.getAge())));
-	}
+    mockMvc
+        .perform(
+            post(AUTHOR_API_URL_PATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(expectedCreatedAuthorDTO)))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id", is(expectedCreatedAuthorDTO.getId().intValue())))
+        .andExpect(jsonPath("$.name", is(expectedCreatedAuthorDTO.getName())))
+        .andExpect(jsonPath("$.age", is(expectedCreatedAuthorDTO.getAge())));
+  }
 
-	@Test
-	void whenPOSTIsCalledWithoutRequiredFieldThenBadRequestStatusShouldBeInformed() throws Exception {
-		AuthorDTO expectedCreatedAuthorDTO = authorDTOBuilder.buildAuthorDTO();
-		expectedCreatedAuthorDTO.setName(null);
+  @Test
+  void whenPOSTIsCalledWithoutRequiredFieldThenBadRequestStatusShouldBeInformed() throws Exception {
+    AuthorDTO expectedCreatedAuthorDTO = authorDTOBuilder.buildAuthorDTO();
+    expectedCreatedAuthorDTO.setName(null);
 
-		mockMvc.perform(post(AUTHOR_API_URL_PATH)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(expectedCreatedAuthorDTO)))
-				.andExpect(status().isBadRequest());
-	}
+    mockMvc
+        .perform(
+            post(AUTHOR_API_URL_PATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(expectedCreatedAuthorDTO)))
+        .andExpect(status().isBadRequest());
+  }
 
+  @Test
+  void whenGETwithValidIdIsCalledThenStatusOkShouldBeReturned() throws Exception {
+    AuthorDTO expectedCreatedAuthorDTO = authorDTOBuilder.buildAuthorDTO();
+
+    when(authorService.findById(expectedCreatedAuthorDTO.getId()))
+        .thenReturn(expectedCreatedAuthorDTO);
+
+    mockMvc
+        .perform(
+            get(AUTHOR_API_URL_PATH + "/" + expectedCreatedAuthorDTO.getId())
+                .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id", is(expectedCreatedAuthorDTO.getId().intValue())))
+        .andExpect(jsonPath("$.name", is(expectedCreatedAuthorDTO.getName())))
+        .andExpect(jsonPath("$.age", is(expectedCreatedAuthorDTO.getAge())));
+  }
 }

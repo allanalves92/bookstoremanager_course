@@ -1,3 +1,4 @@
+
 package com.bookstore.bookstoremanager.author.service;
 
 import com.bookstore.bookstoremanager.author.builder.*;
@@ -22,46 +23,78 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class AuthorServiceTest {
 
-    private final AuthorMapper authorMapper = AuthorMapper.INSTANCE;
+	private final AuthorMapper authorMapper = AuthorMapper.INSTANCE;
 
-    @Mock
-    private AuthorRepository authorRepository;
+	@Mock
+	private AuthorRepository authorRepository;
 
-    @InjectMocks
-    private AuthorService authorService;
+	@InjectMocks
+	private AuthorService authorService;
 
-    private AuthorDTOBuilder authorDTOBuilder;
+	private AuthorDTOBuilder authorDTOBuilder;
 
-    @BeforeEach
-    void setUp() {
-        authorDTOBuilder = AuthorDTOBuilder.builder().build();
-        AuthorDTO authorDTO = authorDTOBuilder.buildAuthorDTO();
-    }
+	@BeforeEach
+	void setUp() {
+		authorDTOBuilder = AuthorDTOBuilder.builder().build();
+		AuthorDTO authorDTO = authorDTOBuilder.buildAuthorDTO();
+	}
 
-    @Test
-    void whenNewAuthorIsInformedThenItShouldBeCreated() {
-        AuthorDTO expectedAuthorToCreateDTO = authorDTOBuilder.buildAuthorDTO();
-        Author expectedCreatedAuthor = authorMapper.toModel(expectedAuthorToCreateDTO);
+	@Test
+	void whenNewAuthorIsInformedThenItShouldBeCreated() {
+		AuthorDTO expectedAuthorToCreateDTO = authorDTOBuilder.buildAuthorDTO();
+		Author expectedCreatedAuthor = authorMapper.toModel(
+			expectedAuthorToCreateDTO);
 
-        //When
-        when(authorRepository.save(expectedCreatedAuthor)).thenReturn(expectedCreatedAuthor);
-        when(authorRepository.findByName(expectedAuthorToCreateDTO.getName())).thenReturn(Optional.empty());
+		// When
+		when(authorRepository.save(expectedCreatedAuthor)).thenReturn(
+			expectedCreatedAuthor);
+		when(authorRepository.findByName(expectedAuthorToCreateDTO.getName()))
+			.thenReturn(Optional.empty());
 
-        //Then
-        AuthorDTO createdAuthorDTO = authorService.create(expectedAuthorToCreateDTO);
+		// Then
+		AuthorDTO createdAuthorDTO = authorService.create(
+			expectedAuthorToCreateDTO);
 
-        assertThat(createdAuthorDTO, is(equalTo(expectedAuthorToCreateDTO)));
-    }
+		assertThat(createdAuthorDTO, is(equalTo(expectedAuthorToCreateDTO)));
+	}
 
-    @Test
-    void whenExistingAuthorIsInformedThenAnExceptionShouldBeThrown() {
-        AuthorDTO expectedAuthorToCreateDTO = authorDTOBuilder.buildAuthorDTO();
-        Author expectedCreatedAuthor = authorMapper.toModel(expectedAuthorToCreateDTO);
+	@Test
+	void whenExistingAuthorIsInformedThenAnExceptionShouldBeThrown() {
+		AuthorDTO expectedAuthorToCreateDTO = authorDTOBuilder.buildAuthorDTO();
+		Author expectedCreatedAuthor = authorMapper.toModel(
+			expectedAuthorToCreateDTO);
 
-        //When
-        when(authorRepository.findByName(expectedAuthorToCreateDTO.getName())).thenReturn(Optional.of(expectedCreatedAuthor));
+		// When
+		when(authorRepository.findByName(expectedAuthorToCreateDTO.getName()))
+			.thenReturn(Optional.of(expectedCreatedAuthor));
 
-        assertThrows(AuthorAlreadyExistsException.class,
-                () -> authorService.create(expectedAuthorToCreateDTO));
-    }
+		assertThrows(AuthorAlreadyExistsException.class, () -> authorService.create(
+			expectedAuthorToCreateDTO));
+	}
+
+	@Test
+	void whenValidIdIsGivenThenAnAuthorShouldBeReturned() {
+		AuthorDTO expectedFoundAuthorDTO = authorDTOBuilder.buildAuthorDTO();
+		Author expectedCreatedAuthor = authorMapper.toModel(expectedFoundAuthorDTO);
+
+		when(authorRepository.findById(expectedFoundAuthorDTO.getId())).thenReturn(
+			Optional.of(expectedCreatedAuthor));
+
+		AuthorDTO foundAuthorDTO = this.authorService.findById(
+			expectedFoundAuthorDTO.getId());
+
+		assertThat(foundAuthorDTO, is(equalTo(expectedFoundAuthorDTO)));
+
+	}
+
+	@Test
+	void whenInvalidIdIsGivenThenAnExceptionShouldBeThrown() {
+		AuthorDTO expectedFoundAuthorDTO = authorDTOBuilder.buildAuthorDTO();
+
+		when(authorRepository.findById(expectedFoundAuthorDTO.getId())).thenReturn(
+			Optional.empty());
+
+		assertThrows(AuthorNotFoundException.class, () -> this.authorService
+			.findById(expectedFoundAuthorDTO.getId()));
+	}
 }
