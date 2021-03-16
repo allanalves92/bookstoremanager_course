@@ -8,9 +8,7 @@ import org.springframework.web.bind.annotation.*;
 public class BookController {
 
     @ApiOperation(value = "Return an example hello world")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success method return")
-    })
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Success method return")})
     @GetMapping
     public String hello() {
         return "Hello Bookstore Manager, I am running an example with PR!!";
