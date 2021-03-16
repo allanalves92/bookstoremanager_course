@@ -1,5 +1,8 @@
 package com.bookstore.bookstoremanager.author.service;
 
+import com.bookstore.bookstoremanager.author.dto.*;
+import com.bookstore.bookstoremanager.author.entity.*;
+import com.bookstore.bookstoremanager.author.exception.*;
 import com.bookstore.bookstoremanager.author.mapper.*;
 import com.bookstore.bookstoremanager.author.repository.*;
 import org.springframework.beans.factory.annotation.*;
@@ -17,6 +20,18 @@ public class AuthorService {
         this.authorRepository = authorRepository;
     }
 
+    public AuthorDTO create(AuthorDTO authorDTO) {
+        verifyIfExists(authorDTO.getName());
+        Author authorToCreate = authorMapper.toModel(authorDTO);
+        Author createdAuthor = authorRepository.save(authorToCreate);
+        return authorMapper.toDTO(createdAuthor);
+    }
+
+    private void verifyIfExists(String authorName) {
+        authorRepository.findByName(authorName).ifPresent(author -> {
+            throw new AuthorAlreadyExistsException(authorName);
+        });
+    }
 
 
 }
