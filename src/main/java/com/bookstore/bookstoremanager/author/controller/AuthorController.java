@@ -7,6 +7,7 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.*;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/authors")
@@ -29,4 +30,10 @@ public class AuthorController implements AuthorControllerDocs {
   public AuthorDTO findById(@PathVariable Long id) {
     return authorService.findById(id);
   }
+
+  @GetMapping
+  public List<AuthorDTO> findAll() {
+    return authorService.findAll();
+  }
+
 }

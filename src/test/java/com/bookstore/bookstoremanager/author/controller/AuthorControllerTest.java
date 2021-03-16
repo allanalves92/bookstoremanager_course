@@ -13,6 +13,8 @@ import org.springframework.test.web.servlet.*;
 import org.springframework.test.web.servlet.setup.*;
 import org.springframework.web.servlet.view.json.*;
 
+import java.util.*;
+
 import static com.bookstore.bookstoremanager.utils.JsonConversionUtils.*;
 import static org.hamcrest.core.Is.*;
 import static org.mockito.Mockito.*;
@@ -87,5 +89,19 @@ public class AuthorControllerTest {
         .andExpect(jsonPath("$.id", is(expectedCreatedAuthorDTO.getId().intValue())))
         .andExpect(jsonPath("$.name", is(expectedCreatedAuthorDTO.getName())))
         .andExpect(jsonPath("$.age", is(expectedCreatedAuthorDTO.getAge())));
+  }
+
+  @Test
+  void whenGETListIsCalledThenStatusOKShouldBeReturned() throws Exception {
+    AuthorDTO expectedCreatedAuthorDTO = authorDTOBuilder.buildAuthorDTO();
+
+    when(authorService.findAll()).thenReturn(Collections.singletonList(expectedCreatedAuthorDTO));
+
+    mockMvc
+        .perform(get(AUTHOR_API_URL_PATH).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].id", is(expectedCreatedAuthorDTO.getId().intValue())))
+        .andExpect(jsonPath("$[0].name", is(expectedCreatedAuthorDTO.getName())))
+        .andExpect(jsonPath("$[0].age", is(expectedCreatedAuthorDTO.getAge())));
   }
 }

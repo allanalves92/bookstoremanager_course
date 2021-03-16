@@ -8,6 +8,9 @@ import com.bookstore.bookstoremanager.author.repository.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
 
+import java.util.*;
+import java.util.stream.*;
+
 @Service
 public class AuthorService {
 
@@ -31,6 +34,12 @@ public class AuthorService {
     Author foundAuthor =
         authorRepository.findById(id).orElseThrow(() -> new AuthorNotFoundException(id));
     return authorMapper.toDTO(foundAuthor);
+  }
+
+  public List<AuthorDTO> findAll() {
+    return authorRepository.findAll().stream()
+        .map(authorMapper::toDTO)
+        .collect(Collectors.toList());
   }
 
   private void verifyIfExists(String authorName) {
