@@ -1,5 +1,8 @@
 package com.bookstore.bookstoremanager.publishers.services;
 
+import com.bookstore.bookstoremanager.publishers.dto.*;
+import com.bookstore.bookstoremanager.publishers.entity.*;
+import com.bookstore.bookstoremanager.publishers.exception.*;
 import com.bookstore.bookstoremanager.publishers.mapper.*;
 import com.bookstore.bookstoremanager.publishers.repository.*;
 import org.springframework.beans.factory.annotation.*;
@@ -17,4 +20,19 @@ public class PublisherService {
     this.publisherRepository = publisherRepository;
   }
 
+  public PublisherDTO create(PublisherDTO publisherDTO) {
+    verifyIfExists(publisherDTO.getName(), publisherDTO.getCode());
+    Publisher publisherToCreate = publisherMapper.toModel(publisherDTO);
+    Publisher createdPublisher = publisherRepository.save(publisherToCreate);
+    return publisherMapper.toDTO(createdPublisher);
+  }
+
+  private void verifyIfExists(String name, String code) {
+    publisherRepository
+        .findByNameOrCode(name, code)
+        .ifPresent(
+            publisher -> {
+              throw new PublisherAlreadyExistsException(name, code);
+            });
+  }
 }
