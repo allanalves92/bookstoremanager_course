@@ -3,6 +3,8 @@ package com.bookstore.bookstoremanager.publishers.controller;
 import com.bookstore.bookstoremanager.publishers.dto.*;
 import io.swagger.annotations.*;
 
+import java.util.*;
+
 @Api("Publishers management")
 public interface PublisherControllerDocs {
 
@@ -21,5 +23,11 @@ public interface PublisherControllerDocs {
     @ApiResponse(code = 200, message = "Success publisher found"),
     @ApiResponse(code = 404, message = "Publisher not found error code")
   })
-  PublisherDTO find(Long id);
+  PublisherDTO findById(Long id);
+
+  @ApiOperation(value = "List all registered publishers")
+  @ApiResponses({
+    @ApiResponse(code = 200, message = "Return all registered publishers"),
+  })
+  List<PublisherDTO> findAll();
 }

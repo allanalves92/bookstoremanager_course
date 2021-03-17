@@ -90,4 +90,29 @@ public class PublisherServiceTest {
         PublisherNotFoundException.class,
         () -> publisherService.findById(expectedFoundPublisherDTO.getId()));
   }
+
+  @Test
+  void whenListPublishersIsCalledThenItShouldBeReturned() {
+    PublisherDTO expectedFoundPublisherDTO = publisherDTOBuilder.buildPublisherDTO();
+    Publisher expectedCreatedPublisher = publisherMapper.toModel(expectedFoundPublisherDTO);
+
+    when(publisherRepository.findAll()).thenReturn(Collections.singletonList(expectedCreatedPublisher));
+
+    List<PublisherDTO> foundPublishersDTO = publisherService.findAll();
+
+    assertThat(foundPublishersDTO.size(), is(1));
+    assertThat(foundPublishersDTO.get(0), is(equalTo(expectedFoundPublisherDTO)));
+  }
+
+  @Test
+  void whenListPublishersIsCalledThenAnEmptyListShouldBeReturned() {
+    PublisherDTO expectedFoundPublisherDTO = publisherDTOBuilder.buildPublisherDTO();
+    Publisher expectedCreatedPublisher = publisherMapper.toModel(expectedFoundPublisherDTO);
+
+    when(publisherRepository.findAll()).thenReturn(Collections.emptyList());
+
+    List<PublisherDTO> foundPublishersDTO = publisherService.findAll();
+
+    assertThat(foundPublishersDTO.size(), is(0));
+  }
 }

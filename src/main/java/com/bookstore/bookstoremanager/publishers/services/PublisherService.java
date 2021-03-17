@@ -8,6 +8,9 @@ import com.bookstore.bookstoremanager.publishers.repository.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
 
+import java.util.*;
+import java.util.stream.*;
+
 @Service
 public class PublisherService {
 
@@ -30,6 +33,12 @@ public class PublisherService {
   public PublisherDTO findById(Long id) {
     Publisher publisher = verifyAndGetPublisher(id);
     return publisherMapper.toDTO(publisher);
+  }
+
+  public List<PublisherDTO> findAll() {
+    return publisherRepository.findAll().stream()
+        .map(publisherMapper::toDTO)
+        .collect(Collectors.toList());
   }
 
   private void verifyIfExists(String name, String code) {
