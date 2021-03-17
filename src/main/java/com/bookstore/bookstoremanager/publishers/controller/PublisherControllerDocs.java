@@ -15,4 +15,11 @@ public interface PublisherControllerDocs {
             "Missing required fields, wrong field range value or publisher already registered")
   })
   PublisherDTO create(PublisherDTO publisherDTO);
+
+  @ApiOperation(value = "Find publisher by id operation")
+  @ApiResponses({
+    @ApiResponse(code = 200, message = "Success publisher found"),
+    @ApiResponse(code = 404, message = "Publisher not found error code")
+  })
+  PublisherDTO find(Long id);
 }

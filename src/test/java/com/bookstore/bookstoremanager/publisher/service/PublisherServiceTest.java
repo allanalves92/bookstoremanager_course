@@ -65,4 +65,29 @@ public class PublisherServiceTest {
         PublisherAlreadyExistsException.class,
         () -> publisherService.create(expectedPublisherToCreateDTO));
   }
+
+  @Test
+  void whenValidIdIsGivenThenAPublisherShouldBeReturned() {
+    PublisherDTO expectedFoundPublisherDTO = publisherDTOBuilder.buildPublisherDTO();
+    Publisher expectedFoundPublisher = publisherMapper.toModel(expectedFoundPublisherDTO);
+
+    when(publisherRepository.findById(expectedFoundPublisherDTO.getId()))
+        .thenReturn(Optional.of(expectedFoundPublisher));
+
+    PublisherDTO publisherFoundDTO = publisherService.findById(expectedFoundPublisherDTO.getId());
+
+    assertThat(publisherFoundDTO, is(equalTo(expectedFoundPublisherDTO)));
+  }
+
+  @Test
+  void whenInvalidIdIsGivenThenAnExceptionShouldBeThrown() {
+    PublisherDTO expectedFoundPublisherDTO = publisherDTOBuilder.buildPublisherDTO();
+
+    when(publisherRepository.findById(expectedFoundPublisherDTO.getId()))
+        .thenReturn(Optional.empty());
+
+    assertThrows(
+        PublisherNotFoundException.class,
+        () -> publisherService.findById(expectedFoundPublisherDTO.getId()));
+  }
 }

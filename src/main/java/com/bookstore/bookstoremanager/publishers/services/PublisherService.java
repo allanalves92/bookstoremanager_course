@@ -27,6 +27,11 @@ public class PublisherService {
     return publisherMapper.toDTO(createdPublisher);
   }
 
+  public PublisherDTO findById(Long id) {
+    Publisher publisher = verifyAndGetPublisher(id);
+    return publisherMapper.toDTO(publisher);
+  }
+
   private void verifyIfExists(String name, String code) {
     publisherRepository
         .findByNameOrCode(name, code)
@@ -34,5 +39,9 @@ public class PublisherService {
             publisher -> {
               throw new PublisherAlreadyExistsException(name, code);
             });
+  }
+
+  private Publisher verifyAndGetPublisher(Long id) {
+    return publisherRepository.findById(id).orElseThrow(() -> new PublisherNotFoundException(id));
   }
 }
