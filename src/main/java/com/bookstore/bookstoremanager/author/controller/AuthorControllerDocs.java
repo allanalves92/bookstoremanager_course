@@ -2,7 +2,6 @@ package com.bookstore.bookstoremanager.author.controller;
 
 import com.bookstore.bookstoremanager.author.dto.*;
 import io.swagger.annotations.*;
-import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
@@ -37,5 +36,5 @@ public interface AuthorControllerDocs {
     @ApiResponse(code = 204, message = "Success author deleted"),
     @ApiResponse(code = 404, message = "Author not found error code")
   })
-  void delete(@PathVariable Long id);
+  void delete(Long id);
 }

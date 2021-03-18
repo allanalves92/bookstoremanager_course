@@ -41,6 +41,11 @@ public class PublisherService {
         .collect(Collectors.toList());
   }
 
+  public void delete(Long id) {
+    verifyAndGetPublisher(id);
+    publisherRepository.deleteById(id);
+  }
+
   private void verifyIfExists(String name, String code) {
     publisherRepository
         .findByNameOrCode(name, code)
