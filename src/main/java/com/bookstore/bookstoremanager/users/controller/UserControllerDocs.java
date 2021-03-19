@@ -22,19 +22,12 @@ public interface UserControllerDocs {
   })
   void delete(Long id);
 
-  //
-  //  @ApiOperation(value = "Find User by id operation")
-  //  @ApiResponses({
-  //    @ApiResponse(code = 200, message = "Success User found"),
-  //    @ApiResponse(code = 404, message = "User not found error code")
-  //  })
-  //  UserDTO findById(Long id);
-  //
-  //  @ApiOperation(value = "List all registered Users")
-  //  @ApiResponses({
-  //    @ApiResponse(code = 200, message = "Return all registered Users"),
-  //  })
-  //  List<UserDTO> findAll();
-  //
-
+  @ApiOperation(value = "Update update operation")
+  @ApiResponses({
+    @ApiResponse(code = 200, message = "Success User update"),
+    @ApiResponse(
+        code = 400,
+        message = "Missing required fields, wrong field range value or User already registered")
+  })
+  MessageDTO update(Long id, UserDTO userToUpdateDTO);
 }
