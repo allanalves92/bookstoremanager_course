@@ -34,7 +34,6 @@ public class PublisherServiceTest {
   @BeforeEach
   void setUp() {
     publisherDTOBuilder = PublisherDTOBuilder.builder().build();
-    PublisherDTO publisherDTO = publisherDTOBuilder.buildPublisherDTO();
   }
 
   @Test
@@ -107,8 +106,6 @@ public class PublisherServiceTest {
 
   @Test
   void whenListPublishersIsCalledThenAnEmptyListShouldBeReturned() {
-    PublisherDTO expectedFoundPublisherDTO = publisherDTOBuilder.buildPublisherDTO();
-    Publisher expectedCreatedPublisher = publisherMapper.toModel(expectedFoundPublisherDTO);
 
     when(publisherRepository.findAll()).thenReturn(Collections.emptyList());
 
