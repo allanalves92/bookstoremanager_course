@@ -76,4 +76,19 @@ public class UserControllerTest {
                 .content(asJsonString(expectedUserToCreateDTO)))
         .andExpect(status().isBadRequest());
   }
+
+  @Test
+  void whenDeleteWithValidIdIsCalledThenNoContentShouldBeReturned() throws Exception {
+    UserDTO expectedDeletedUserDTO = userDTOBuilder.buildUserDTO();
+
+    Long expectedDeletedUserDTOId = expectedDeletedUserDTO.getId();
+
+    doNothing().when(userService).delete(expectedDeletedUserDTOId);
+
+    mockMvc
+        .perform(
+            delete(USERS_API_URL_PATH + "/" + expectedDeletedUserDTOId)
+                .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNoContent());
+  }
 }
