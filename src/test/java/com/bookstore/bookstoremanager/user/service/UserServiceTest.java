@@ -2,6 +2,8 @@ package com.bookstore.bookstoremanager.user.service;
 
 import com.bookstore.bookstoremanager.user.builder.*;
 import com.bookstore.bookstoremanager.users.dto.*;
+import com.bookstore.bookstoremanager.users.entity.*;
+import com.bookstore.bookstoremanager.users.exception.*;
 import com.bookstore.bookstoremanager.users.mapper.*;
 import com.bookstore.bookstoremanager.users.repository.*;
 import com.bookstore.bookstoremanager.users.service.*;
@@ -9,6 +11,13 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.*;
 import org.mockito.*;
 import org.mockito.junit.jupiter.*;
+
+import java.util.*;
+
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -25,5 +34,36 @@ public class UserServiceTest {
   void setUP() {
     userDTOBuilder = UserDTOBuilder.builder().build();
     UserDTO userDTO = userDTOBuilder.buildUserDTO();
+  }
+
+  @Test
+  void whenNewsUserIsInformedThenItShouldBeCreated() {
+    UserDTO expectedCreatedUserDTO = userDTOBuilder.buildUserDTO();
+    User expectedCreatedUser = userMapper.toModel(expectedCreatedUserDTO);
+
+    String expectedCreationMessage = "User allanalves with ID 1 successfully created";
+
+    when(userRepository.findByEmailOrUsername(
+            expectedCreatedUserDTO.getEmail(), expectedCreatedUserDTO.getUsername()))
+        .thenReturn(Optional.empty());
+
+    when(userRepository.save(expectedCreatedUser)).thenReturn(expectedCreatedUser);
+
+    MessageDTO creationMessage = userService.create(expectedCreatedUserDTO);
+
+    assertThat(expectedCreationMessage, is(equalTo(creationMessage.getMessage())));
+  }
+
+  @Test
+  void whenExistingUserIsInformedThenAnExceptionShouldBeThrown() {
+    UserDTO expectedCreatedUserDTO = userDTOBuilder.buildUserDTO();
+    User expectedCreatedUser = userMapper.toModel(expectedCreatedUserDTO);
+
+    when(userRepository.findByEmailOrUsername(
+            expectedCreatedUserDTO.getEmail(), expectedCreatedUserDTO.getUsername()))
+        .thenReturn(Optional.of(expectedCreatedUser));
+
+    assertThrows(
+        UserAlreadyExistsException.class, () -> userService.create(expectedCreatedUserDTO));
   }
 }

@@ -1,5 +1,8 @@
 package com.bookstore.bookstoremanager.users.service;
 
+import com.bookstore.bookstoremanager.users.dto.*;
+import com.bookstore.bookstoremanager.users.entity.*;
+import com.bookstore.bookstoremanager.users.exception.*;
 import com.bookstore.bookstoremanager.users.mapper.*;
 import com.bookstore.bookstoremanager.users.repository.*;
 import org.springframework.beans.factory.annotation.*;
@@ -15,5 +18,34 @@ public class UserService {
   @Autowired
   public UserService(UserRepository userRepository) {
     this.userRepository = userRepository;
+  }
+
+  public MessageDTO create(UserDTO userToCreateDTO) {
+    verifyIfExists(userToCreateDTO.getEmail(), userToCreateDTO.getUsername());
+    User userToCreate = userMapper.toModel(userToCreateDTO);
+    User createdUser = userRepository.save(userToCreate);
+
+    return creationMessage(createdUser);
+  }
+
+  private void verifyIfExists(String email, String username) {
+    userRepository
+        .findByEmailOrUsername(email, username)
+        .ifPresent(
+            user -> {
+              throw new UserAlreadyExistsException(email, username);
+            });
+  }
+
+  private MessageDTO creationMessage(User createdUser) {
+    String createdUsername = createdUser.getUsername();
+    Long createdUserId = createdUser.getId();
+
+    String createdUserMessage =
+        String.format(
+            "User %s with ID %s successfully created",
+            createdUser.getUsername(), createdUser.getId());
+
+    return MessageDTO.builder().message(createdUserMessage).build();
   }
 }
