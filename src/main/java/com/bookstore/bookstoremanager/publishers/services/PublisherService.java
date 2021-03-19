@@ -16,7 +16,7 @@ public class PublisherService {
 
   private static final PublisherMapper publisherMapper = PublisherMapper.INSTANCE;
 
-  private PublisherRepository publisherRepository;
+  private final PublisherRepository publisherRepository;
 
   @Autowired
   public PublisherService(PublisherRepository publisherRepository) {

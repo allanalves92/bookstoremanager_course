@@ -33,7 +33,6 @@ public class AuthorServiceTest {
   @BeforeEach
   void setUp() {
     authorDTOBuilder = AuthorDTOBuilder.builder().build();
-    AuthorDTO authorDTO = authorDTOBuilder.buildAuthorDTO();
   }
 
   @Test
@@ -104,9 +103,6 @@ public class AuthorServiceTest {
 
   @Test
   void whenListAuthorsIsCalledThenAnEmptyListShouldBeReturned() {
-    AuthorDTO expectedFoundAuthorDTO = authorDTOBuilder.buildAuthorDTO();
-    Author expectedCreatedAuthor = authorMapper.toModel(expectedFoundAuthorDTO);
-
     when(authorRepository.findAll()).thenReturn(Collections.emptyList());
 
     List<AuthorDTO> foundAuthorsDTO = authorService.findAll();
