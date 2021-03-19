@@ -91,4 +91,41 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNoContent());
   }
+
+  @Test
+  void whenPUTIsCalledThenStatusOKShouldBeReturned() throws Exception {
+    UserDTO expectedUserToUpdateDTO = userDTOBuilder.buildUserDTO();
+    Long expectedUserToUpdateId = expectedUserToUpdateDTO.getId();
+
+    String updateUserMessage = "User allanalves with ID 1 successfully updated";
+
+    MessageDTO updateMessage = MessageDTO.builder().message(updateUserMessage).build();
+
+    when(userService.update(expectedUserToUpdateDTO.getId(), expectedUserToUpdateDTO))
+        .thenReturn(updateMessage);
+
+    mockMvc
+        .perform(
+            put(USERS_API_URL_PATH + "/" + expectedUserToUpdateId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(expectedUserToUpdateDTO)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.message", is(updateMessage.getMessage())));
+  }
+
+  @Test
+  void whenPUTIsCalledWithoutRequiredFieldsThenBadRequestStatusShouldBeInformed() throws Exception {
+
+    UserDTO expectedUserToUpdateDTO = userDTOBuilder.buildUserDTO();
+    Long expectedUserToUpdateId = expectedUserToUpdateDTO.getId();
+
+    expectedUserToUpdateDTO.setName(null);
+
+    mockMvc
+        .perform(
+            put(USERS_API_URL_PATH + "/" + expectedUserToUpdateId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(expectedUserToUpdateDTO)))
+        .andExpect(status().isBadRequest());
+  }
 }

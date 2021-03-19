@@ -12,7 +12,7 @@ import javax.validation.*;
 @RequestMapping("api/v1/users")
 public class UserController implements UserControllerDocs {
 
-  private UserService userService;
+  private final UserService userService;
 
   @Autowired
   public UserController(UserService userService) {
@@ -29,5 +29,10 @@ public class UserController implements UserControllerDocs {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(@PathVariable Long id) {
     userService.delete(id);
+  }
+
+  @PutMapping("/{id}")
+  public MessageDTO update(@PathVariable Long id, @RequestBody @Valid UserDTO userToUpdateDTO) {
+    return userService.update(id, userToUpdateDTO);
   }
 }
