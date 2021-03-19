@@ -33,7 +33,6 @@ public class UserServiceTest {
   @BeforeEach
   void setUP() {
     userDTOBuilder = UserDTOBuilder.builder().build();
-    UserDTO userDTO = userDTOBuilder.buildUserDTO();
   }
 
   @Test
@@ -65,5 +64,31 @@ public class UserServiceTest {
 
     assertThrows(
         UserAlreadyExistsException.class, () -> userService.create(expectedCreatedUserDTO));
+  }
+
+  @Test
+  void whenValidUserIsInformedThenItShouldBeDeleted() {
+    UserDTO expectedUserToBeDeletedDTO = userDTOBuilder.buildUserDTO();
+    User expectedUserToBeReturned = userMapper.toModel(expectedUserToBeDeletedDTO);
+
+    Long expectedUserIdToBeDeleted = expectedUserToBeDeletedDTO.getId();
+
+    when(userRepository.findById(expectedUserIdToBeDeleted))
+        .thenReturn(Optional.of(expectedUserToBeReturned));
+    doNothing().when(userRepository).deleteById(expectedUserIdToBeDeleted);
+
+    userService.delete(expectedUserIdToBeDeleted);
+
+    verify(userRepository, times(1)).deleteById(expectedUserIdToBeDeleted);
+    verify(userRepository, times(1)).findById(expectedUserIdToBeDeleted);
+  }
+
+  @Test
+  void whenInvalidUserIdIsGivenThenAnExceptionShouldBeThrown() {
+    var expectedInvalidUserId = 2L;
+
+    when(userRepository.findById(expectedInvalidUserId)).thenReturn(Optional.empty());
+
+    assertThrows(UserNotFoundException.class, () -> this.userService.delete(expectedInvalidUserId));
   }
 }

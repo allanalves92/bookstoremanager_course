@@ -15,6 +15,13 @@ public interface UserControllerDocs {
   })
   MessageDTO create(UserDTO userToCreateDTO);
 
+  @ApiOperation(value = "Delete User by id operation")
+  @ApiResponses({
+    @ApiResponse(code = 204, message = "Success User deleted"),
+    @ApiResponse(code = 404, message = "User not found error code")
+  })
+  void delete(Long id);
+
   //
   //  @ApiOperation(value = "Find User by id operation")
   //  @ApiResponses({
@@ -29,10 +36,5 @@ public interface UserControllerDocs {
   //  })
   //  List<UserDTO> findAll();
   //
-  //  @ApiOperation(value = "Delete User by id operation")
-  //  @ApiResponses({
-  //    @ApiResponse(code = 204, message = "Success User deleted"),
-  //    @ApiResponse(code = 404, message = "User not found error code")
-  //  })
-  //  void delete(Long id);
+
 }

@@ -28,6 +28,11 @@ public class UserService {
     return creationMessage(createdUser);
   }
 
+  public void delete(Long id) {
+    verifyIfExists(id);
+    userRepository.deleteById(id);
+  }
+
   private void verifyIfExists(String email, String username) {
     userRepository
         .findByEmailOrUsername(email, username)
@@ -47,5 +52,9 @@ public class UserService {
             createdUser.getUsername(), createdUser.getId());
 
     return MessageDTO.builder().message(createdUserMessage).build();
+  }
+
+  private void verifyIfExists(Long id) {
+    userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
   }
 }
