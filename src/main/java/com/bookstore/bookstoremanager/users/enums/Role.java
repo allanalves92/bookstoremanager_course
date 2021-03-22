@@ -5,8 +5,8 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 public enum Role {
-  ADMIN("Admin"),
-  USER("user");
+  ADMIN("ADMIN"),
+  USER("USER");
 
   private final String description;
 }
