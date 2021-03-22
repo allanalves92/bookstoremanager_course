@@ -37,4 +37,8 @@ public class UserDTO {
   @NotNull
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
   private LocalDate birthDate;
+
+  @Enumerated(EnumType.STRING)
+  @NotNull
+  private Role role;
 }
