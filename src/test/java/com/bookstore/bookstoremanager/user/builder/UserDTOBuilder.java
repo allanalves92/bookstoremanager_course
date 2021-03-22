@@ -23,7 +23,7 @@ public class UserDTOBuilder {
 
   @Builder.Default private final String password = "12345";
 
-  @Builder.Default private final LocalDate birthDate = LocalDate.of(2021, 03, 18);
+  @Builder.Default private final LocalDate birthDate = LocalDate.of(2021, 3, 18);
 
   @Builder.Default private final Role role = Role.USER;
 
