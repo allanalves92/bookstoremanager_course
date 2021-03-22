@@ -25,7 +25,9 @@ public class UserDTOBuilder {
 
   @Builder.Default private final LocalDate birthDate = LocalDate.of(2021, 03, 18);
 
+  @Builder.Default private final Role role = Role.USER;
+
   public UserDTO buildUserDTO() {
-    return new UserDTO(id, name, age, gender, email, username, password, birthDate);
+    return new UserDTO(id, name, age, gender, email, username, password, birthDate, role);
   }
 }
