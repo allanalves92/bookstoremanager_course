@@ -27,15 +27,20 @@ public class UserControllerTest {
 
   @Mock private UserService userService;
 
+  @Mock private AuthenticationService authenticationService;
+
   @InjectMocks private UserController userController;
 
   private UserDTOBuilder userDTOBuilder;
 
   private MockMvc mockMvc;
 
+  private JwtRequestBuilder jwtRequestBuilder;
+
   @BeforeEach
   void setUP() {
     userDTOBuilder = UserDTOBuilder.builder().build();
+    jwtRequestBuilder = JwtRequestBuilder.builder().build();
     mockMvc =
         MockMvcBuilders.standaloneSetup(userController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
@@ -126,6 +131,36 @@ public class UserControllerTest {
             put(USERS_API_URL_PATH + "/" + expectedUserToUpdateId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(expectedUserToUpdateDTO)))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void whenPOSTIsCalledToAuthenticateUserThenOkShouldBeReturned() throws Exception {
+    JwtRequest jwtRequest = jwtRequestBuilder.builJwtRequest();
+    JwtResponse expectedJwtToken = JwtResponse.builder().jwtToken("fakeToken").build();
+
+    when(authenticationService.createAuthenticationToken(jwtRequest)).thenReturn(expectedJwtToken);
+
+    mockMvc
+        .perform(
+            post(USERS_API_URL_PATH + "/authenticate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(jwtRequest)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.jwtToken", is(expectedJwtToken.getJwtToken())));
+  }
+
+  @Test
+  void whenPOSTIsCalledToAuthenticateUserWithoutPasswordThenBadRequestShouldBeReturned()
+      throws Exception {
+    JwtRequest jwtRequest = jwtRequestBuilder.builJwtRequest();
+    jwtRequest.setPassword(null);
+
+    mockMvc
+        .perform(
+            post(USERS_API_URL_PATH + "/authenticate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(jwtRequest)))
         .andExpect(status().isBadRequest());
   }
 }

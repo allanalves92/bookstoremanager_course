@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.*;
 import org.springframework.security.config.http.*;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.security.crypto.password.*;
+import org.springframework.security.web.authentication.*;
 
 @Configuration
 @EnableWebSecurity
@@ -44,6 +45,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   private final UserDetailsService userDetailsService;
 
   private final PasswordEncoder passwordEncoder;
+
+  private JwtRequestFilter jwtRequestFilter;
 
   @Autowired
   public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -79,6 +82,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     httpSecurity.headers().frameOptions().disable();
 
+    httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
   }
 
   @Override

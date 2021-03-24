@@ -14,9 +14,12 @@ public class UserController implements UserControllerDocs {
 
   private final UserService userService;
 
+  private AuthenticationService authenticationService;
+
   @Autowired
-  public UserController(UserService userService) {
+  public UserController(UserService userService, AuthenticationService authenticationService) {
     this.userService = userService;
+    this.authenticationService = authenticationService;
   }
 
   @PostMapping
@@ -34,5 +37,10 @@ public class UserController implements UserControllerDocs {
   @PutMapping("/{id}")
   public MessageDTO update(@PathVariable Long id, @RequestBody @Valid UserDTO userToUpdateDTO) {
     return userService.update(id, userToUpdateDTO);
+  }
+
+  @PostMapping(value = "/authenticate")
+  public JwtResponse createAuthenticationToken(@RequestBody @Valid JwtRequest jwtRequest) {
+    return authenticationService.createAuthenticationToken(jwtRequest);
   }
 }
