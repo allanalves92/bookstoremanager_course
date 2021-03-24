@@ -10,6 +10,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.*;
 import org.mockito.*;
 import org.mockito.junit.jupiter.*;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.authority.*;
 import org.springframework.security.core.userdetails.*;
 
@@ -18,6 +19,7 @@ import java.util.*;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,9 +33,16 @@ public class AuthenticationServiceTest {
 
   private UserDTOBuilder userDTOBuilder;
 
+  @Mock private JwtTokenManager jwtTokenManager;
+
+  @Mock private AuthenticationManager authenticationManager;
+
+  private JwtRequestBuilder jwtRequestBuilder;
+
   @BeforeEach
   void setUp() {
     userDTOBuilder = UserDTOBuilder.builder().build();
+    jwtRequestBuilder = JwtRequestBuilder.builder().build();
   }
 
   @Test
@@ -61,6 +70,26 @@ public class AuthenticationServiceTest {
 
     when(userRepository.findByUsername(expectedUsername)).thenReturn(Optional.empty());
 
-    assertThrows(UsernameNotFoundException.class, () -> authenticationService.loadUserByUsername(expectedUsername));
+    assertThrows(
+        UsernameNotFoundException.class,
+        () -> authenticationService.loadUserByUsername(expectedUsername));
+  }
+
+  @Test
+  void whenUsernameAndPasswordIsInformedThenATokenShouldBeGenerated() {
+    JwtRequest jwtRequest = jwtRequestBuilder.builJwtRequest();
+    UserDTO expectedFoundUserDTO = userDTOBuilder.buildUserDTO();
+    User expectedFoundUser = userMapper.toModel(expectedFoundUserDTO);
+    String expectedGeneratedToken = "fakeToken";
+
+    when(userRepository.findByUsername(jwtRequest.getUsername()))
+        .thenReturn(Optional.of(expectedFoundUser));
+
+    when(jwtTokenManager.generateToken(any(UserDetails.class))).thenReturn(expectedGeneratedToken);
+
+    JwtResponse generatedTokenResponse =
+        authenticationService.createAuthenticationToken(jwtRequest);
+
+    assertThat(generatedTokenResponse.getJwtToken(), is(equalTo(expectedGeneratedToken)));
   }
 }
