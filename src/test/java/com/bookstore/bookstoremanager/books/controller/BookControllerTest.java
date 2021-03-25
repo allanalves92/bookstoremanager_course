@@ -116,4 +116,19 @@ public class BookControllerTest {
         .andExpect(jsonPath("$[0].name", is(expectedFoundBookDTO.getName())))
         .andExpect(jsonPath("$[0].isbn", is(expectedFoundBookDTO.getIsbn())));
   }
+
+  @Test
+  void whenDELETEIsCalledWithValidBookIdThenNoContentOkShouldBeInformed() throws Exception {
+    BookRequestDTO expectedBookToDeleteDTO = bookRequestDTOBuilder.buildRequestBookDTO();
+
+    doNothing()
+        .when(bookService)
+        .deleteByIdAndUser(any(AuthenticatedUser.class), eq(expectedBookToDeleteDTO.getId()));
+
+    mockMvc
+        .perform(
+            delete(BOOKS_API_URL_PATH + "/" + expectedBookToDeleteDTO.getId())
+                .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNoContent());
+  }
 }
