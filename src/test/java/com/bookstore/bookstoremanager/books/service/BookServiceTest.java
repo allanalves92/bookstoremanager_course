@@ -155,4 +155,30 @@ public class BookServiceTest {
 
     assertThat(returnedBooksResponseList.size(), is(0));
   }
+
+  @Test
+  void whenExistingBookIdIsInformedThenItShouldBeDeleted() {
+    BookResponseDTO expectedBookToDeleteDTO = bookResponseDTOBuilder.buildBookResponse();
+    Book expectedBookToDelete = bookMapper.toModel(expectedBookToDeleteDTO);
+
+    when(userService.verifyAndGetUserIfExists(authenticatedUser.getUsername())).thenReturn(new User());
+    when(bookRepository.findByIdAndUser(eq(expectedBookToDeleteDTO.getId()), any(User.class)))
+            .thenReturn(Optional.of(expectedBookToDelete));
+    doNothing().when(bookRepository).deleteByIdAndUser(eq(expectedBookToDeleteDTO.getId()), any(User.class));
+
+    bookService.deleteByIdAndUser(authenticatedUser, expectedBookToDeleteDTO.getId());
+
+    verify(bookRepository, times(1)).deleteByIdAndUser(eq(expectedBookToDeleteDTO.getId()), any(User.class));
+  }
+
+  @Test
+  void whenNotExistingBookIdIsInformedThenAnExceptionShouldBeThrown() {
+    BookResponseDTO expectedBookToDeleteDTO = bookResponseDTOBuilder.buildBookResponse();
+
+    when(userService.verifyAndGetUserIfExists(authenticatedUser.getUsername())).thenReturn(new User());
+    when(bookRepository.findByIdAndUser(eq(expectedBookToDeleteDTO.getId()), any(User.class)))
+            .thenReturn(Optional.empty());
+
+    assertThrows(BookNotFoundException.class, () -> bookService.deleteByIdAndUser(authenticatedUser, expectedBookToDeleteDTO.getId()));
+  }
 }
