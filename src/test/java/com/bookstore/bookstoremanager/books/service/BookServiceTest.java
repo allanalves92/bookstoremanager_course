@@ -104,12 +104,13 @@ public class BookServiceTest {
     BookResponseDTO expectedFoundBookDTO = bookResponseDTOBuilder.buildBookResponse();
     Book expectedFoundBook = bookMapper.toModel(expectedFoundBookDTO);
 
-    when(userService.verifyAndGetUserIfExists(authenticatedUser.getUsername())).thenReturn(new User());
-    when(bookRepository.findByIdAndUser(
-            eq(expectedBookToFindDTO.getId()),
-            any(User.class))).thenReturn(Optional.of(expectedFoundBook));
+    when(userService.verifyAndGetUserIfExists(authenticatedUser.getUsername()))
+        .thenReturn(new User());
+    when(bookRepository.findByIdAndUser(eq(expectedBookToFindDTO.getId()), any(User.class)))
+        .thenReturn(Optional.of(expectedFoundBook));
 
-    BookResponseDTO foundBookDTO = bookService.findByIdAndUser(authenticatedUser, expectedBookToFindDTO.getId());
+    BookResponseDTO foundBookDTO =
+        bookService.findByIdAndUser(authenticatedUser, expectedBookToFindDTO.getId());
 
     assertThat(foundBookDTO, is(equalTo(expectedFoundBookDTO)));
   }
@@ -118,12 +119,40 @@ public class BookServiceTest {
   void whenNotExistingBookIsInformedThenAnExceptionShouldBeThrown() {
     BookRequestDTO expectedBookToFindDTO = bookRequestDTOBuilder.buildRequestBookDTO();
 
-    when(userService.verifyAndGetUserIfExists(authenticatedUser.getUsername())).thenReturn(new User());
-    when(bookRepository.findByIdAndUser(
-            eq(expectedBookToFindDTO.getId()),
-            any(User.class))).thenReturn(Optional.empty());
+    when(userService.verifyAndGetUserIfExists(authenticatedUser.getUsername()))
+        .thenReturn(new User());
+    when(bookRepository.findByIdAndUser(eq(expectedBookToFindDTO.getId()), any(User.class)))
+        .thenReturn(Optional.empty());
 
-    assertThrows(BookNotFoundException.class, () -> bookService.findByIdAndUser(authenticatedUser, expectedBookToFindDTO.getId()));
+    assertThrows(
+        BookNotFoundException.class,
+        () -> bookService.findByIdAndUser(authenticatedUser, expectedBookToFindDTO.getId()));
   }
 
+  @Test
+  void whenListBookIsCalledThenItShouldBeReturned() {
+    BookResponseDTO expectedFoundBookDTO = bookResponseDTOBuilder.buildBookResponse();
+    Book expectedFoundBook = bookMapper.toModel(expectedFoundBookDTO);
+
+    when(userService.verifyAndGetUserIfExists(authenticatedUser.getUsername()))
+        .thenReturn(new User());
+    when(bookRepository.findAllByUser(any(User.class)))
+        .thenReturn(Collections.singletonList(expectedFoundBook));
+
+    List<BookResponseDTO> returnedBooksResponseList = bookService.findAllByUser(authenticatedUser);
+
+    assertThat(returnedBooksResponseList.size(), is(1));
+    assertThat(returnedBooksResponseList.get(0), is(equalTo(expectedFoundBookDTO)));
+  }
+
+  @Test
+  void whenListBookIsCalledThenAnEmptyListItShouldBeReturned() {
+    when(userService.verifyAndGetUserIfExists(authenticatedUser.getUsername()))
+        .thenReturn(new User());
+    when(bookRepository.findAllByUser(any(User.class))).thenReturn(Collections.EMPTY_LIST);
+
+    List<BookResponseDTO> returnedBooksResponseList = bookService.findAllByUser(authenticatedUser);
+
+    assertThat(returnedBooksResponseList.size(), is(0));
+  }
 }
