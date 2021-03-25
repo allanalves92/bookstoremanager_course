@@ -9,6 +9,7 @@ import org.springframework.security.core.annotation.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.*;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/books")
@@ -33,5 +34,11 @@ public class BookController implements BookControllerDocs {
   public BookResponseDTO findByIdAndUser(
       @AuthenticationPrincipal AuthenticatedUser authenticatedUser, @PathVariable Long bookId) {
     return bookService.findByIdAndUser(authenticatedUser, bookId);
+  }
+
+  @GetMapping
+  public List<BookResponseDTO> findAllByUser(
+      @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
+    return bookService.findAllByUser(authenticatedUser);
   }
 }
