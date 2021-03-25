@@ -31,7 +31,7 @@ public class PublisherService {
   }
 
   public PublisherDTO findById(Long id) {
-    Publisher publisher = verifyAndGetPublisher(id);
+    Publisher publisher = verifyAndGetIfExists(id);
     return publisherMapper.toDTO(publisher);
   }
 
@@ -42,7 +42,7 @@ public class PublisherService {
   }
 
   public void delete(Long id) {
-    verifyAndGetPublisher(id);
+    verifyAndGetIfExists(id);
     publisherRepository.deleteById(id);
   }
 
@@ -55,7 +55,7 @@ public class PublisherService {
             });
   }
 
-  private Publisher verifyAndGetPublisher(Long id) {
+  public Publisher verifyAndGetIfExists(Long id) {
     return publisherRepository.findById(id).orElseThrow(() -> new PublisherNotFoundException(id));
   }
 }
