@@ -22,7 +22,7 @@ public interface UserControllerDocs {
   })
   void delete(Long id);
 
-  @ApiOperation(value = "Update update operation")
+  @ApiOperation(value = "Update user operation")
   @ApiResponses({
     @ApiResponse(code = 200, message = "Success User update"),
     @ApiResponse(
