@@ -64,4 +64,10 @@ public class UserService {
   private User verifyAndGetIfExists(Long id) {
     return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
   }
+
+  public User verifyAndGetUserIfExists(String username) {
+    return userRepository
+        .findByUsername(username)
+        .orElseThrow(() -> new UserNotFoundException(username));
+  }
 }
