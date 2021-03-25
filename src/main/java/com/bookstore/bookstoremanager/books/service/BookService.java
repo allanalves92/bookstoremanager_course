@@ -51,6 +51,15 @@ public class BookService {
     return bookMapper.toDTO(savedBook);
   }
 
+  public BookResponseDTO findByIdAndUser(AuthenticatedUser authenticatedUser, Long bookId) {
+    User foundAuthenticatedUser =
+        userService.verifyAndGetUserIfExists(authenticatedUser.getUsername());
+    return bookRepository
+        .findByIdAndUser(bookId, foundAuthenticatedUser)
+        .map(bookMapper::toDTO)
+        .orElseThrow(() -> new BookNotFoundException(bookId));
+  }
+
   private void verifyIfBookIsAlreadyRegistered(User foundUser, BookRequestDTO bookRequestDTO) {
     bookRepository
         .findByNameAndIsbnAndUser(bookRequestDTO.getName(), bookRequestDTO.getIsbn(), foundUser)
@@ -60,5 +69,4 @@ public class BookService {
                   bookRequestDTO.getName(), bookRequestDTO.getIsbn(), foundUser.getUsername());
             });
   }
-
 }

@@ -97,4 +97,33 @@ public class BookServiceTest {
         BookAlreadyExistsException.class,
         () -> bookService.create(authenticatedUser, expectedBookToCreateDTO));
   }
+
+  @Test
+  void whenExistingBookIsInformedThenABookShouldBeReturned() {
+    BookRequestDTO expectedBookToFindDTO = bookRequestDTOBuilder.buildRequestBookDTO();
+    BookResponseDTO expectedFoundBookDTO = bookResponseDTOBuilder.buildBookResponse();
+    Book expectedFoundBook = bookMapper.toModel(expectedFoundBookDTO);
+
+    when(userService.verifyAndGetUserIfExists(authenticatedUser.getUsername())).thenReturn(new User());
+    when(bookRepository.findByIdAndUser(
+            eq(expectedBookToFindDTO.getId()),
+            any(User.class))).thenReturn(Optional.of(expectedFoundBook));
+
+    BookResponseDTO foundBookDTO = bookService.findByIdAndUser(authenticatedUser, expectedBookToFindDTO.getId());
+
+    assertThat(foundBookDTO, is(equalTo(expectedFoundBookDTO)));
+  }
+
+  @Test
+  void whenNotExistingBookIsInformedThenAnExceptionShouldBeThrown() {
+    BookRequestDTO expectedBookToFindDTO = bookRequestDTOBuilder.buildRequestBookDTO();
+
+    when(userService.verifyAndGetUserIfExists(authenticatedUser.getUsername())).thenReturn(new User());
+    when(bookRepository.findByIdAndUser(
+            eq(expectedBookToFindDTO.getId()),
+            any(User.class))).thenReturn(Optional.empty());
+
+    assertThrows(BookNotFoundException.class, () -> bookService.findByIdAndUser(authenticatedUser, expectedBookToFindDTO.getId()));
+  }
+
 }
