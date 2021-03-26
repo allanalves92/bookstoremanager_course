@@ -1,5 +1,6 @@
 dist: xenial
 language: java
+sudo: true
 jdk: openjdk15
 install: true
 addons:
