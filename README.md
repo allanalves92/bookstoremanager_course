@@ -1,3 +1,7 @@
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=allanalves92_bookstoremanager_course&metric=alert_status)](https://sonarcloud.io/dashboard?id=allanalves92_bookstoremanager_course)
+
+[![Build Status](https://travis-ci.org/allanalves92/bookstoremanager_course.svg?branch=master)](https://travis-ci.org/allanalves92/bookstoremanager_course)
+
 <h2>Bookstore API Manager</h2>
 
 O objetivo do projeto Bookstore API Manager é disponibilizar uma API para cadastro dos livros de uma livraria através de uma API REST.
